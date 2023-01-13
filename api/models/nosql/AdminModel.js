@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const { Schema } = require('mongoose')
+const bcrypt = require("bcrypt");
 // const mongooseDelete = require('mongoose-delete')
 const AdminScheme = new mongoose.Schema(
    {
@@ -45,7 +46,7 @@ const AdminScheme = new mongoose.Schema(
       },
       admin: {
          type: Boolean,
-         default: false
+         default: true
       },
       superAdmin: {
          type: Boolean,
@@ -53,5 +54,33 @@ const AdminScheme = new mongoose.Schema(
       }
    }
 )
+
+const saltRound = 10;
+AdminScheme.pre("save", function (next) {
+  if (this.isNew || this.isModified("password")) {
+    const document = this;
+    bcrypt.hash(document.password, saltRound, (err, hashedPassword) => {
+      if (err) {
+        next(err);
+      } else {
+        document.password = hashedPassword;
+        next();
+      }
+    });
+  } else {
+    next();
+      }
+});
+
+AdminScheme.methods.isCorrectPassword = function (password, callback) {
+  bcrypt.compare(password, this.password, function (err, res) {
+    if (err) {
+      callback(err);
+    } else {
+      callback(err, res);
+    }
+  });
+};
+
 
 module.exports = mongoose.model("Admin", AdminScheme)

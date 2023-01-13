@@ -22,8 +22,8 @@ app.use("/api", require("./routes"))
 
 app.listen(PORT, ()=> console.log("Server listening on port " + PORT ))
 
-bikesToDb()//
+// bikesToDb()//
 
-changePricesPut()
+// changePricesPut()
 
 dbConnect()

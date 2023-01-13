@@ -2,6 +2,10 @@ const express = require('express');
 const router = express();
 const {getBikesApi, getBikesDb, bikesToDb} = require("../controllers/bikes");
 const { bikeModel } = require('../models');
+const {   
+    authenticateTokenUserRoute, 
+    authenticateTokenAdminRoute
+ } = require('../validators/tokenValidator')
 // 
 router.get("/", async(req, res) => {
     // console.log('entre a get')
@@ -46,7 +50,7 @@ router.get("/:id", async(req, res) => {
     }
 })
 
-router.put('/:id', async(req, res) => {
+router.put('/:id', authenticateTokenAdminRoute, async(req, res) => {
     const { id } = req.params
     try {
         const { ...body } = req.body;
@@ -60,7 +64,7 @@ router.put('/:id', async(req, res) => {
     }
 })
 
-router.post("/", async(req, res) => {
+router.post("/", authenticateTokenAdminRoute, async(req, res) => {
     try {
         console.log(req.body)
         const {
@@ -107,7 +111,7 @@ router.post("/", async(req, res) => {
     }
 })
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', authenticateTokenAdminRoute, async(req, res) => {
     const { id } = req.params;
     try {
         const data = await bikeModel.findByIdAndDelete(id)

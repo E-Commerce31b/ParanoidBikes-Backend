@@ -1,12 +1,15 @@
 const express = require('express');
-const {userModel} = require('../models/index')
+const {userModel, adminModel} = require('../models/index')
 const router = express();
 const jwt = require('jsonwebtoken')
-const authenticateToken = require('../validators/tokenValidator')
+const {   
+    authenticateTokenUserRoute, 
+    authenticateTokenAdminRoute
+ } = require('../validators/tokenValidator')
 // const { getUsersValidator } = require('../validators/bikeValidator')
 // 
 
-router.get('/', async(req, res) => {
+router.get('/', authenticateTokenAdminRoute, async(req, res) => {
     const {first_name, last_name} = req.query
     try {
         const AllUsers = await userModel.find({})
@@ -106,19 +109,59 @@ router.post('/', async(req, res) => {
 
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
-    userModel.findOne({ email: email }, (err, user) => {
+    adminModel.findOne({ email: email }, (err, user) => {
       if (err) {
         res.status(500).send("Error al autenticar al usuario");
       }
       if (!user) {
-        res.status(500).send("El usuario no existe");
+        userModel.findOne({ email: email }, (err, user) => {
+            if (err) {
+              res.status(500).send("Error al autenticar al usuario");
+            }
+            if (!user) {
+              res.status(500).send("El usuario no existe");
+            } else {
+              user.isCorrectPassword(password, (err, result) => {
+                if (err) {
+                  res.status(500).send("Error al autenticar");
+                } else if (result) {
+                  const accessToken = jwt.sign({
+                      // Assigning data value
+                      data: 'User'
+                  }, 'secretKey', {
+                      expiresIn: '10y'
+                  });
+                  res.status(200).send({accessToken: accessToken});
+                } else {
+                  res.status(500).send("Usuario o contranseña incorrecta");
+                }
+              });
+            }
+          });
       } else {
         user.isCorrectPassword(password, (err, result) => {
           if (err) {
             res.status(500).send("Error al autenticar");
           } else if (result) {
-            const accessToken = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET)
-            res.status(200).send({accessToken: accessToken});
+            // console.log(user)
+            if(user.superAdmin) {
+                const accessToken = jwt.sign({
+                    // Assigning data value
+                    data: 'SuperAdmin'
+                }, 'secretKey', {
+                    expiresIn: '10y'
+                });
+                res.status(200).send({accessToken: accessToken});
+            } 
+            if(user.admin && !user.superAdmin){
+                const accessToken = jwt.sign({
+                    // Assigning data value
+                    data: 'Admin'
+                }, 'secretKey', {
+                    expiresIn: '10y'
+                });
+                res.status(200).send({accessToken: accessToken});
+            }
           } else {
             res.status(500).send("Usuario o contranseña incorrecta");
           }
@@ -126,7 +169,7 @@ router.post("/login", (req, res) => {
       }
     });
   });
-  
+
 router.delete('/:id', async(req, res) => {
     const { id } = req.params;
     try {
