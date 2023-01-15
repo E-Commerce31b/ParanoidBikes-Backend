@@ -127,7 +127,10 @@ router.post("/login", (req, res) => {
                 } else if (result) {
                   const accessToken = jwt.sign({
                       // Assigning data value
-                      data: 'User'
+                      data: {
+                        type: 'User',
+                        id: user._id
+                      }
                   }, 'secretKey', {
                       expiresIn: '10y'
                   });
@@ -147,7 +150,10 @@ router.post("/login", (req, res) => {
             if(user.superAdmin) {
                 const accessToken = jwt.sign({
                     // Assigning data value
-                    data: 'SuperAdmin'
+                    data: {
+                      type: 'SuperAdmin',
+                      id: user._id
+                    }
                 }, 'secretKey', {
                     expiresIn: '10y'
                 });
@@ -156,7 +162,10 @@ router.post("/login", (req, res) => {
             if(user.admin && !user.superAdmin){
                 const accessToken = jwt.sign({
                     // Assigning data value
-                    data: 'Admin'
+                    data: {
+                      type: 'Admin',
+                      id: user._id
+                    }
                 }, 'secretKey', {
                     expiresIn: '10y'
                 });
