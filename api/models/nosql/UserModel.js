@@ -21,15 +21,17 @@ const UserScheme = new mongoose.Schema({
   last_name: {
     type: String,
   },
-  history: {
-    type: Array,
-  },
+  history: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Bike'
+  }],
   type: {
     type: String,
   },
-  purchased: {
-    type: Array,
-  },
+  purchased: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Bike'
+  }],
   country: {
     type: String,
   },
