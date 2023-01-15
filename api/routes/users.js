@@ -36,7 +36,7 @@ router.get('/', authenticateTokenAdminRoute, async(req, res) => {
 router.get('/:id', async(req, res) => {
     const { id } = req.params;
     try {
-        const data = await userModel.findById(id)
+        const data = await userModel.findById(id).populate('history')
         if(data.softDelete === true) {
             res.status(404).send('user not found D:')
         } else {
@@ -182,7 +182,7 @@ router.post("/login", (req, res) => {
 router.delete('/:id', async(req, res) => {
     const { id } = req.params;
     try {
-        const data = await userModel.findByIdAndDelete(id)
+        const data = await userModel.findByIdAndDelete(id).populate('history').exec()
         res.status(200).send(data)
     } catch (err) {
         console.log('error en delete users')

@@ -13,7 +13,7 @@ function authenticateTokenUserRoute(req, res, next) {
       req.user = user
       // console.log('llegue a next')
       console.log(user)
-      if(user.data === 'User') {
+      if(user.data.type === 'User') {
          next()
       }
    })
@@ -32,7 +32,7 @@ function authenticateTokenAdminRoute(req, res, next) {
       req.user = user
       // console.log('llegue a next')
       console.log(user)
-      if(user.data === 'Admin' || user.data === 'SuperAdmin') {
+      if(user.data.type === 'Admin' || user.data.type === 'SuperAdmin') {
          next()
       } else {
          res.sendStatus(401)    
