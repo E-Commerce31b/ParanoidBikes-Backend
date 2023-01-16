@@ -1,35 +1,31 @@
 const nodemailer = require("nodemailer")
 
-const sendMail = async (email) =>{
+const sendMail = async (email, amount) =>{
 
   const config ={
     host : "smtp.gmail.com",
-    port : 587,
-    secure: false,
+    port : 465,
+    secure: true,
     auth : {
-      user : "profyarg@gmail.com",
-      pass :  "gokwwdnqdxtrczks",
+      user : "paranoidbikesarg@gmail.com",
+      pass :  'yxoc cgsi igwk nvdf',
        },
     tls: {
       rejectUnauthorized: false
   }
   }
   const mensaje = {
-    from : "profyarg@gmail.com",
+    from : "paranoidbikesarg@gmail.com",
     to : email,
     subject : "Gracias por tu compra",
-    text : "Tu pago se ha acreditado con éxito"
+    text : `Tu pago por ${amount} USD se ha acreditado con éxito`
 
 
   }
 const transport = nodemailer.createTransport(config)
 const info = await transport.sendMail(mensaje)
 
-
-console.log(info)
-
 }
-
 module.exports = {
 sendMail
 }
