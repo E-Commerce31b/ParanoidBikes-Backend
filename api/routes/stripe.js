@@ -18,7 +18,7 @@ router.post("/checkout", async (req, res) => {
       payment_method: id,
       confirm: true,
     });
-    sendMail.sendMail(email)
+    sendMail.sendMail(email, amount)
     res.send({ message: "Pago exitoso" });
     console.log(id)
   } catch (error) {
