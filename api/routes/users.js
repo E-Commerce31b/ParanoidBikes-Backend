@@ -12,18 +12,18 @@ const {
 router.get('/', authenticateTokenAdminRoute, async(req, res) => {
     const {first_name, last_name} = req.query
     try {
-        const AllUsers = await userModel.find({})
-        const users = AllUsers.filter(e => e.softDelete !== true)
-        if(last_name || first_name) {
-            let found = []
-            last_name ? 
-            found = users.filter(u => u?.last_name?.toLowerCase().includes(last_name?.toLowerCase())) :
-            found = users.filter(u => u?.first_name?.toLowerCase().includes(first_name?.toLowerCase()))
-            console.log(found)
-            res.status(200).send(found)
-        } else {
-            res.status(200).send(AllUsers)
-        }
+      const AllUsers = await userModel.find({})
+      const users = AllUsers.filter(e => e.softDelete !== true)
+      if(last_name || first_name) {
+          let found = []
+          last_name ? 
+          found = users.filter(u => u?.last_name?.toLowerCase().includes(last_name?.toLowerCase())) :
+          found = users.filter(u => u?.first_name?.toLowerCase().includes(first_name?.toLowerCase()))
+          console.log(found)
+          res.status(200).send(found)
+      } else {
+          res.status(200).send(AllUsers)
+      }
 
     } catch (err) {
         console.log('error en get usuario')
@@ -36,12 +36,12 @@ router.get('/', authenticateTokenAdminRoute, async(req, res) => {
 router.get('/:id', async(req, res) => {
     const { id } = req.params;
     try {
-        const data = await userModel.findById(id).populate('history')
-        if(data.softDelete === true) {
-            res.status(404).send('user not found D:')
-        } else {
-            res.status(200).send(data)
-        }
+      const data = await userModel.findById(id).populate('history')
+      if(data.softDelete === true) {
+          res.status(404).send('user not found D:')
+      } else {
+          res.status(200).send(data)
+      }
         
     } catch (err) {
         console.log('error en get user id')
@@ -106,6 +106,59 @@ router.post('/', async(req, res) => {
         res.status(404).send("can't post D:")
     }
 })
+
+router.post("/firebase-login", async (req, res) => {
+  console.log(req.body);
+  const { email } = req.body;
+  console.log(email);
+  try {
+    const idToken = req.body.token;
+    console.log(idToken);
+    const decodedToken = jwt_decode(idToken);
+    console.log(decodedToken);
+    const uid = decodedToken.uid;
+    const user = await adminModel.findOne({ email: email });
+    if (!user) {
+      const user = await userModel.findOne({ email: email });
+      if (!user) {
+        res.status(401).send("El usuario no existe");
+      } else {
+        // generar un token de acceso personalizado
+        const accessToken = jwt.sign(
+          {
+            data: {
+              type: "User",
+              id: user._id,
+            },
+          },
+          "secretKey",
+          {
+            expiresIn: "10y",
+          }
+        );
+        res.status(200).send({ accessToken: accessToken });
+      }
+    } else {
+      // generar un token de acceso personalizado
+      const accessToken = jwt.sign(
+        {
+          data: {
+            type: "Admin",
+            id: user._id,
+          },
+        },
+        "secretKey",
+        {
+          expiresIn: "10y",
+        }
+      );
+      res.status(200).send({ accessToken: accessToken });
+    }
+  } catch (error) {
+    // manejar errores en la verificación del token
+    res.status(401).send(error);
+  }
+});
 
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
@@ -178,6 +231,8 @@ router.post("/login", (req, res) => {
       }
     });
   });
+
+  
 
 router.delete('/:id', async(req, res) => {
     const { id } = req.params;

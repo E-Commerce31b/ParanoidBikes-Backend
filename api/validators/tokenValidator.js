@@ -40,9 +40,27 @@ function authenticateTokenAdminRoute(req, res, next) {
    })
 }
 
+const validateAdminToken = (token) => {
+   // console.log(token)
+   let decoded = token && token.split(' ')[1]
+   // console.log('decoded', decoded)
+   if(token == null) throw('Usuario no desconocido')
+   jwt.verify(decoded, 'secretKey', (err, user) => {
+      // console.log(user)
+      if(user.data.type === 'Admin' || user.data.type === 'SuperAdmin') {
+         console.log(user.data.type)
+         const data = user.data.type
+         return data
+      } else {
+         return "User"
+      }
+   })
+}
+
 
 
 module.exports = {
    authenticateTokenUserRoute, 
-   authenticateTokenAdminRoute
+   authenticateTokenAdminRoute,
+   validateAdminToken
 }
