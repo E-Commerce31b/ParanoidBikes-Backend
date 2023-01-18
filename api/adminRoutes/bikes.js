@@ -12,7 +12,6 @@ router.get("/", authenticateTokenAdminRoute, async(req, res) => {
     const { name } = req.query;
     try {
          const bikes = await getBikesDb()
-         console.log(bikes)
             if(name) {
                let found = bikes.filter(
                   f => f?.name?.toLowerCase().includes(name?.toLowerCase())
