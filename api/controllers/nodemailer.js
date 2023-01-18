@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer")
 
-const sendMail = async (email, amount) =>{
+const sendMail = async (email, amount, adress, city, country) =>{
 
   const config ={
     host : "smtp.gmail.com",
@@ -18,7 +18,7 @@ const sendMail = async (email, amount) =>{
     from : "paranoidbikesarg@gmail.com",
     to : email,
     subject : "Gracias por tu compra",
-    text : `Tu pago por ${amount} USD se ha acreditado con éxito`
+    text : `Tu pago por ${amount} USD se ha acreditado con éxito y será enviado a la dirección ${adress} de la ciudad de ${city} de ${country}`
 
 
   }
