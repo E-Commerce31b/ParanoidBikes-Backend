@@ -30,7 +30,19 @@ const UserScheme = new mongoose.Schema({
   },
   purchased: [{
     type: mongoose.Types.ObjectId,
-    ref: 'Bike'
+    ref: 'Bike',
+    count: {
+      type: Number,
+      default: 0
+    }
+  }],
+  cart: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Bike',
+    count: {
+      type: Number,
+      default: 0
+    }
   }],
   country: {
     type: String,
