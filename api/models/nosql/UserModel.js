@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 // const mongooseDelete = require('mongoose-delete')
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const UserScheme = new mongoose.Schema({
   id: {
     type: mongoose.Types.ObjectId,
