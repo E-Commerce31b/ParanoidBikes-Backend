@@ -22,23 +22,27 @@ const UserScheme = new mongoose.Schema({
     type: String,
   },
   history: [{
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Bike'
   }],
   type: {
     type: String,
   },
   purchased: [{
-    type: mongoose.Types.ObjectId,
-    ref: 'Bike',
+    bike: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Bike',
+    },
     count: {
       type: Number,
       default: 0
     }
   }],
   cart: [{
-    type: mongoose.Types.ObjectId,
-    ref: 'Bike',
+    bike: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Bike',
+    },
     count: {
       type: Number,
       default: 0

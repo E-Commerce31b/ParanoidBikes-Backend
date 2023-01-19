@@ -44,23 +44,10 @@ router.get("/:id", authenticateTokenAdminRoute, async(req, res) => {
     }
 })
 
-router.put('/:id', authenticateTokenAdminRoute, async(req, res) => {
-    const { id } = req.params
-    try {
-        const { ...body } = req.body;
-        const data = await bikeModel.findByIdAndUpdate(id, body)
-        res.status(200).send(data)
-    } catch (err) {
-        console.log('error en put bicis')
-        console.log(err)
-        console.log('error en put bicis')
-        res.status(400).send("cant't modify")
-    }
-})
 
 router.post("/", authenticateTokenAdminRoute, async(req, res) => {
     try {
-        console.log(req.body)
+        console.log(req)
         const {
             name,
             maker,
@@ -73,6 +60,16 @@ router.post("/", authenticateTokenAdminRoute, async(req, res) => {
             priceAmount
         } = req.body;
         
+        console.log(            name,
+            maker,
+            image,
+            year,
+            category,
+            isEBike,
+            gender,
+            priceCurrency,
+            priceAmount)
+
         const createdBike = await bikeModel.create({
             name,
             maker,
@@ -91,6 +88,20 @@ router.post("/", authenticateTokenAdminRoute, async(req, res) => {
         console.log(err)
         console.log('error en post bicis')
         res.status(404).send("can't post D:")
+    }
+})
+
+router.put('/:id', authenticateTokenAdminRoute, async(req, res) => {
+    const { id } = req.params
+    try {
+        const { ...body } = req.body;
+        const data = await bikeModel.findByIdAndUpdate(id, body)
+        res.status(200).send(data)
+    } catch (err) {
+        console.log('error en put bicis')
+        console.log(err)
+        console.log('error en put bicis')
+        res.status(400).send("cant't modify")
     }
 })
 
