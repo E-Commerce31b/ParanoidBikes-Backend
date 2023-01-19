@@ -45,7 +45,7 @@ router.get("/:id", authenticateTokenAdminRoute, async(req, res) => {
 })
 
 
-router.post("/", authenticateTokenAdminRoute, async(req, res) => {
+router.post("/", async(req, res) => {
     try {
         console.log(req)
         const {
