@@ -72,56 +72,59 @@ router.put('/:id', async(req, res) => {
     }
 })
 
-router.post('/', async(req, res) => {
-    try {
-        const {
-            first_name,
-            password,
-            last_name,
-            history,
-            type,
-            purchased,
-            email,
-            country,
-            city,
-            state,
-            address,
-            birthday,
-            DNI
-        } = req.body
-        const createdUser = userModel.create({
-            first_name,
-            password,
-            last_name,
-            history,
-            type,
-            purchased,
-            email,
-            country,
-            city,
-            state,
-            address,
-            birthday,
-            DNI
-        })
-        res.status(200).send("Usuario Creado")
-    } catch (err) {
-        console.log('error en post user')
-        console.log(err)
-        console.log('error en post user')
-        res.status(404).send("can't post D:")
-    }
-})
+router.post("/", async (req, res) => {
+  // console.log('entre a post')
+  try {
+    const {
+      first_name,
+      password,
+      last_name,
+      history,
+      type,
+      purchased,
+      email,
+      country,
+      city,
+      state,
+      address,
+      birthday,
+      DNI,
+    } = req.body;
+
+    // console.log(email, password)
+    const createdUser = await userModel.create({
+      first_name,
+      password,
+      last_name,
+      history,
+      type,
+      purchased,
+      email,
+      country,
+      city,
+      state,
+      address,
+      birthday,
+      DNI,
+    });
+    res.status(200).send("Usuario Creado");
+  } catch (err) {
+    console.log("error en post user");
+    console.log(err);
+    console.log("error en post user");
+    res.status(404).send("can't post D:");
+  }
+});
 
 router.post("/firebase-login", async (req, res) => {
-  console.log(req.body);
+  // console.log('firebase-login' + req.body);
   const { email } = req.body;
   console.log(email);
   try {
     const idToken = req.body.token;
-    console.log(idToken);
+    // console.log(idToken);
     const decodedToken = jwt_decode(idToken);
-    console.log(decodedToken);
+    // console.log(decodedToken);
     const uid = decodedToken.uid;
     const user = await adminModel.findOne({ email: email });
     if (!user) {
