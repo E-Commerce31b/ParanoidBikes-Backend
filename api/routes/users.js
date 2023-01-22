@@ -13,7 +13,7 @@ const bcrypt = require("bcryptjs")
 router.get('/', authenticateTokenAdminRoute, async(req, res) => {
     const {first_name, last_name} = req.query
     try {
-      const AllUsers = await userModel.find({}).populate('history').populate('purchased')
+      const AllUsers = await userModel.find({}).populate('history').populate('purchased.bike').populate('cart.bike')
       const users = AllUsers.filter(e => e.softDelete !== true)
       if(last_name || first_name) {
           let found = []
@@ -37,7 +37,7 @@ router.get('/', authenticateTokenAdminRoute, async(req, res) => {
 router.get('/:id', async(req, res) => {
     const { id } = req.params;
     try {
-      const data = await userModel.findById(id).populate('history').populate('purchased')
+      const data = await userModel.findById(id).populate('history').populate('purchased.bike').populate('cart.bike')
       if(data.softDelete === true) {
           res.status(404).send('user not found D:')
       } else {
