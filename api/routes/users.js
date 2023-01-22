@@ -13,7 +13,7 @@ const bcrypt = require("bcryptjs")
 router.get('/', authenticateTokenAdminRoute, async(req, res) => {
     const {first_name, last_name} = req.query
     try {
-      const AllUsers = await userModel.find({})
+      const AllUsers = await userModel.find({}).populate('history').populate('purchased')
       const users = AllUsers.filter(e => e.softDelete !== true)
       if(last_name || first_name) {
           let found = []
@@ -37,7 +37,7 @@ router.get('/', authenticateTokenAdminRoute, async(req, res) => {
 router.get('/:id', async(req, res) => {
     const { id } = req.params;
     try {
-      const data = await userModel.findById(id).populate('history')
+      const data = await userModel.findById(id).populate('history').populate('purchased')
       if(data.softDelete === true) {
           res.status(404).send('user not found D:')
       } else {
@@ -59,10 +59,16 @@ router.put('/:id', async(req, res) => {
     if(password) {
       const hashedPassword = await bcrypt.hash(password, 10)
     }
+    const { ...body } = req.body
+    if(password) {
+      const hashedPassword = await bcrypt.hash(password, 10)
+      body.password = hashedPassword
+    }
+    
     try {
         const { ...body } = req.body
-        // body.password = hashedPassword
-      console.log(body)
+        body.password = hashedPassword
+
         const data = await userModel.findByIdAndUpdate(id, body)
         res.status(200).send(data)
     } catch (err) {
@@ -73,56 +79,59 @@ router.put('/:id', async(req, res) => {
     }
 })
 
-router.post('/', async(req, res) => {
-    try {
-        const {
-            first_name,
-            password,
-            last_name,
-            history,
-            type,
-            purchased,
-            email,
-            country,
-            city,
-            state,
-            address,
-            birthday,
-            DNI
-        } = req.body
-        const createdUser = userModel.create({
-            first_name,
-            password,
-            last_name,
-            history,
-            type,
-            purchased,
-            email,
-            country,
-            city,
-            state,
-            address,
-            birthday,
-            DNI
-        })
-        res.status(200).send("Usuario Creado")
-    } catch (err) {
-        console.log('error en post user')
-        console.log(err)
-        console.log('error en post user')
-        res.status(404).send("can't post D:")
-    }
-})
+router.post("/", async (req, res) => {
+  // console.log('entre a post')
+  try {
+    const {
+      first_name,
+      password,
+      last_name,
+      history,
+      type,
+      purchased,
+      email,
+      country,
+      city,
+      state,
+      address,
+      birthday,
+      DNI,
+    } = req.body;
+
+    // console.log(email, password)
+    const createdUser = await userModel.create({
+      first_name,
+      password,
+      last_name,
+      history,
+      type,
+      purchased,
+      email,
+      country,
+      city,
+      state,
+      address,
+      birthday,
+      DNI,
+    });
+    res.status(200).send("Usuario Creado");
+  } catch (err) {
+    console.log("error en post user");
+    console.log(err);
+    console.log("error en post user");
+    res.status(404).send("can't post D:");
+  }
+});
 
 router.post("/firebase-login", async (req, res) => {
-  console.log(req.body);
+  // console.log('firebase-login' + req.body);
   const { email } = req.body;
   console.log(email);
   try {
     const idToken = req.body.token;
-    console.log(idToken);
+    // console.log(idToken);
     const decodedToken = jwt_decode(idToken);
-    console.log(decodedToken);
+    // console.log(decodedToken);
     const uid = decodedToken.uid;
     const user = await adminModel.findOne({ email: email });
     if (!user) {
