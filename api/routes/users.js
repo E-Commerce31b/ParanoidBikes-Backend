@@ -56,12 +56,13 @@ router.get('/:id', async(req, res) => {
 router.put('/:id', async(req, res) => {
     const { id } = req.params;
     const {password} = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10)
-
+    if(password) {
+      const hashedPassword = await bcrypt.hash(password, 10)
+    }
     try {
         const { ...body } = req.body
-        body.password = hashedPassword
-
+        // body.password = hashedPassword
+      console.log(body)
         const data = await userModel.findByIdAndUpdate(id, body)
         res.status(200).send(data)
     } catch (err) {
