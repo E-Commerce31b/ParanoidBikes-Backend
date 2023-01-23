@@ -37,7 +37,10 @@ router.get('/', authenticateTokenAdminRoute, async(req, res) => {
 router.get('/:id', async(req, res) => {
     const { id } = req.params;
     try {
-      const data = await userModel.findById(id).populate('history').populate('purchased.bike').populate('cart.bike')
+      const data = await userModel.findById(id).lean().populate('history').populate('purchased.bike').populate('cart.bike')
+      for(let i = 0; i < data.cart.length; i++) {
+        data.cart[i] = {...data.cart[i].bike, count: data.cart[i].count}
+      }
       if(data.softDelete === true) {
           res.status(404).send('user not found D:')
       } else {
@@ -56,9 +59,6 @@ router.get('/:id', async(req, res) => {
 router.put('/:id', async(req, res) => {
     const { id } = req.params;
     const {password} = req.body;
-    if(password) {
-      const hashedPassword = await bcrypt.hash(password, 10)
-    }
     const { ...body } = req.body
     if(password) {
       const hashedPassword = await bcrypt.hash(password, 10)
@@ -66,11 +66,12 @@ router.put('/:id', async(req, res) => {
     }
     
     try {
-        const { ...body } = req.body
-        body.password = hashedPassword
-
         const data = await userModel.findByIdAndUpdate(id, body)
-        res.status(200).send(data)
+        let user = await userModel.findById(id).lean().populate('history').populate('purchased.bike').populate('cart.bike')
+        for(let i = 0; i < user.cart.length; i++) {
+          user.cart[i] = {...user.cart[i].bike, count: user.cart[i].count}
+        }
+        res.status(200).send(user)
     } catch (err) {
         console.log('error en put users')
         console.log(err)
