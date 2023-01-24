@@ -91,7 +91,7 @@ router.post("/", async(req, res) => {
     }
 })
 
-router.put('/:id', authenticateTokenAdminRoute, async(req, res) => {
+router.put('/:id', async(req, res) => {
     const { id } = req.params
     try {
         const { ...body } = req.body;

@@ -98,9 +98,13 @@ router.get('/:id', authenticateTokenAdminRoute, async(req, res) => {
 
 
 router.put('/:id', authenticateTokenAdminRoute, async(req, res) => {
+    console.log(req.params) 
+    
     const { id } = req.params;
+    console.log(id)
     try {
         const { ...body } = req.body
+        console.log(body)
         const data = await adminModel.findByIdAndUpdate(id, body)
         res.status(200).send("Admin Updated")
     } catch (err) {
