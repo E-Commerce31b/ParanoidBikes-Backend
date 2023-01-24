@@ -189,7 +189,7 @@ router.post("/firebase-login", async (req, res) => {
     // manejar errores en la verificación del token
     res.status(401).send(error);
   }
-});
+}); //
 
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
