@@ -9,6 +9,7 @@ const {
 // const { getUsersValidator } = require('../validators/bikeValidator')
 // 
 const bcrypt = require("bcryptjs")
+const jwt_decode = require('jwt-decode');
 
 router.get('/', authenticateTokenAdminRoute, async(req, res) => {
     const {first_name, last_name} = req.query
@@ -141,22 +142,26 @@ router.post("/", async (req, res) => {
 router.post("/firebase-login", async (req, res) => {
   // console.log('firebase-login' + req.body);
   const { email } = req.body;
-  console.log(email);
+  // console.log(email);
   try {
     const idToken = req.body.token;
     // console.log(idToken);
     const decodedToken = jwt_decode(idToken);
-    // console.log(decodedToken);
+    // console.log("token", decodedToken);
     const uid = decodedToken.uid;
-    const user = await adminModel.findOne({ email: email });
+    let user = await adminModel.findOne({ email: email });
+    console.log(user);
     if (!user) {
-      const user = await userModel.findOne({ email: email });
+      // console.log("if");
+      user = await userModel.findOne({ email: email });
+      // console.log(user);
       if (!user) {
         res.status(401).send("El usuario no existe");
-      } 
-      if(user.softDelete) {
+      }
+      if (user.softDelete) {
         res.status(500).send("Usuario no autorizado");
       } else {
+        console.log("entre a else 1");
         // generar un token de acceso personalizado
         const accessToken = jwt.sign(
           {
@@ -174,6 +179,7 @@ router.post("/firebase-login", async (req, res) => {
       }
     } else {
       // generar un token de acceso personalizado
+      // console.log("entre a else 2");
       const accessToken = jwt.sign(
         {
           data: {
@@ -189,88 +195,107 @@ router.post("/firebase-login", async (req, res) => {
       res.status(200).send({ accessToken: accessToken });
     }
   } catch (error) {
+    console.log("ERROR EN FIREBASE-LOGIN");
+    console.log(error);
+    console.log("ERROR EN FIREBASE-LOGIN");
+
     // manejar errores en la verificación del token
     res.status(401).send(error);
   }
-}); //
+})
+
 
 router.post("/login", (req, res) => {
-    const { email, password } = req.body;
-    adminModel.findOne({ email: email }, (err, user) => {
-      if (err) {
-        res.status(500).send("Error al autenticar al usuario");
-      }
-      if (!user) {
-        userModel.findOne({ email: email }, (err, user) => {
-            if (err) {
-              res.status(500).send("Error al autenticar al usuario");
-            }
-            if(user.softDelete) {
-              res.status(500).send("Usuario no autorizado");
-            }
-            if (!user) {
-              res.status(500).send("El usuario no existe");
-            } else {
-              user.isCorrectPassword(password, (err, result) => {
-                if (err) {
-                  res.status(500).send("Error al autenticar");
-                } else if (result) {
-                  const accessToken = jwt.sign({
-                      // Assigning data value
-                      data: {
-                        type: 'User',
-                        id: user._id
-                      }
-                  }, 'secretKey', {
-                      expiresIn: '10y'
-                  });
-                  res.status(200).send({accessToken: accessToken});
-                } else {
-                  res.status(500).send("Usuario o contranseña incorrecta");
-                }
-              });
-            }
-          });
-      } else {
-        user.isCorrectPassword(password, (err, result) => {
-          if (err) {
-            res.status(500).send("Error al autenticar");
-          } else if (result) {
-            // console.log(user)
-            if(user.softDelete) {
-              res.status(500).send("Usuario no autorizado");
-            }
-            if(user.superAdmin) {
-                const accessToken = jwt.sign({
-                    // Assigning data value
-                    data: {
-                      type: 'SuperAdmin',
-                      id: user._id
-                    }
-                }, 'secretKey', {
-                    expiresIn: '10y'
-                });
-                res.status(200).send({accessToken: accessToken});
-            } 
-            if(user.admin && !user.superAdmin){
-                const accessToken = jwt.sign({
-                    // Assigning data value
-                    data: {
-                      type: 'Admin',
-                      id: user._id
-                    }
-                }, 'secretKey', {
-                    expiresIn: '10y'
-                });
-                res.status(200).send({accessToken: accessToken});
-            }
-          } else {
-            res.status(500).send("Usuario o contranseña incorrecta");
+  console.log("entre");
+  const { email, password } = req.body;
+  adminModel.findOne({ email: email }, (err, user) => {
+    if (err) {
+      res.status(500).send("Error al autenticar al usuario");
+    }
+    if (!user) {
+      userModel.findOne({ email: email }, (err, user) => {
+        console.log(user);
+        if (err) {
+          res.status(500).send("Error al autenticar al usuario");
+        }
+        if (!user) {
+          res.status(500).send("El usuario no existe");
+        } else {
+          if (user.softDelete) {
+            console.log("jholaaa");
+            res.status(500).send("No tiene permisos de ingreso");
           }
-        });
-      }
-    });
+          !user.softDelete &&
+            user.isCorrectPassword(password, (err, result) => {
+              if (err) {
+                res.status(500).send("Error al autenticar");
+              } else if (result) {
+                const accessToken = jwt.sign(
+                  {
+                    // Assigning data value
+                    data: {
+                      type: "User",
+                      id: user._id,
+                    },
+                  },
+                  "secretKey",
+                  {
+                    expiresIn: "10y",
+                  }
+                );
+                res.status(200).send({ accessToken: accessToken });
+              } else {
+                console.log("hola2222");
+                res.status(500).send("Usuario o contraseña incorrecta");
+              }
+            });
+        }
+      });
+    } else {
+      user.isCorrectPassword(password, (err, result) => {
+        if (err) {
+          res.status(500).send("Error al autenticar");
+        } else if (result) {
+          // console.log(user)
+          if (user.superAdmin) {
+            const accessToken = jwt.sign(
+              {
+                // Assigning data value
+                data: {
+                  type: "SuperAdmin",
+                  id: user._id,
+                },
+              },
+              "secretKey",
+              {
+                expiresIn: "10y",
+              }
+            );
+            res.status(200).send({ accessToken: accessToken });
+          }
+          if (user.admin && !user.superAdmin) {
+            const accessToken = jwt.sign(
+              {
+                // Assigning data value
+                data: {
+                  type: "Admin",
+                  id: user._id,
+                },
+              },
+              "secretKey",
+              {
+                expiresIn: "10y",
+              }
+            );
+            res.status(200).send({ accessToken: accessToken });
+          }
+        } else {
+          res.status(500).send("Usuario o contranseña incorrecta");
+        }
+      });
+    }
   });
+});//
 
   
 
