@@ -85,7 +85,7 @@ router.put('/panel/:id', async(req, res) => {
   try {
       const { ...body } = req.body
       const data = await userModel.findByIdAndUpdate(id, body)
-      res.status(200).send(data)
+      res.status(200).send("Usuario actualizado")
   } catch (err) {
       console.log('error en put users')
       console.log(err)
