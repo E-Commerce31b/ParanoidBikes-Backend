@@ -153,6 +153,9 @@ router.post("/firebase-login", async (req, res) => {
       const user = await userModel.findOne({ email: email });
       if (!user) {
         res.status(401).send("El usuario no existe");
+      } 
+      if(user.softDelete) {
+        res.status(500).send("Usuario no autorizado");
       } else {
         // generar un token de acceso personalizado
         const accessToken = jwt.sign(
@@ -202,6 +205,9 @@ router.post("/login", (req, res) => {
             if (err) {
               res.status(500).send("Error al autenticar al usuario");
             }
+            if(user.softDelete) {
+              res.status(500).send("Usuario no autorizado");
+            }
             if (!user) {
               res.status(500).send("El usuario no existe");
             } else {
@@ -231,6 +237,9 @@ router.post("/login", (req, res) => {
             res.status(500).send("Error al autenticar");
           } else if (result) {
             // console.log(user)
+            if(user.softDelete) {
+              res.status(500).send("Usuario no autorizado");
+            }
             if(user.superAdmin) {
                 const accessToken = jwt.sign({
                     // Assigning data value
