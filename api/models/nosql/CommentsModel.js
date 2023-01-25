@@ -30,10 +30,6 @@ const CommentSchema = new mongoose.Schema({
 		  type: Date,
 		  default: Date.now,
 		},
-		author: {
-		  type: mongoose.Schema.Types.ObjectId,
-		  ref: 'Admin',
-		},
 	 }],
 });
 
