@@ -18,7 +18,7 @@ const sendMail = async (email, amount, adress, city, country) =>{
     from : "paranoidbikesarg@gmail.com",
     to : email,
     subject : "Gracias por tu compra",
-    text : `Tu pago por ${amount} USD se ha acreditado con éxito y será enviado a la dirección ${adress} de la ciudad de ${city} de ${country}`
+    text : `Tu pago por ${amount} USD se ha acreditado con éxito`
 
 
   }
