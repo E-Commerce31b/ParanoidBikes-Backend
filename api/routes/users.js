@@ -14,7 +14,7 @@ const jwt_decode = require('jwt-decode');
 router.get('/', authenticateTokenAdminRoute, async(req, res) => {
     const {first_name, last_name} = req.query
     try {
-      const AllUsers = await userModel.find({}).populate('history').populate('purchased.bike').populate('cart.bike')
+      const AllUsers = await userModel.find({}).populate('history').populate('purchased').populate('cart.bike')
       const users = AllUsers.filter(e => e.softDelete !== true)
       if(last_name || first_name) {
           let found = []

@@ -4,7 +4,9 @@ const {getBikesApi, getBikesDb, bikesToDb} = require("../controllers/bikes");
 const { bikeModel } = require('../models');
 
 router.get("/", async(req, res) => {
+    console.log('entre')
     const { name } = req.query;
+    console.log(name)
     try {
         const bikes = await getBikesDb()
             const total = bikes.filter(e => e.softDelete !== true)
