@@ -11,10 +11,8 @@ const stripe = new Stripe(API_STRIPE);
 
 router.post("/checkout", async (req, res) => {
   const { id, amount, email, city, address, country } = req.body;
-  console.log(req.body)
   try {
     const info = await userModel.findOneAndUpdate({email : email },{address : address, city : city, country : country})
-
     const payment = await stripe.paymentIntents.create({
       amount : amount,
       currency: "USD",
@@ -22,9 +20,11 @@ router.post("/checkout", async (req, res) => {
       payment_method: id,
       confirm: true,
     });
-    sendMail.sendMail(email, amount, address, city)
+    sendMail.sendMail(email, amount, address, city, country)
     res.send({ message: "Pago exitoso" });
   } catch (error) {
+    console.log(error)
+    console.log({message: error})
     res.send({ message: error });
   }
 });

@@ -207,7 +207,7 @@ router.post("/firebase-login", async (req, res) => {
 
 
 router.post("/login", (req, res) => {
-  console.log("entre");
+  console.log("entre a login");
   const { email, password } = req.body;
   adminModel.findOne({ email: email }, (err, user) => {
     if (err) {

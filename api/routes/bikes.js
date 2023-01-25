@@ -4,7 +4,7 @@ const {getBikesApi, getBikesDb, bikesToDb} = require("../controllers/bikes");
 const { bikeModel } = require('../models');
 
 router.get("/", async(req, res) => {
-    console.log('entre')
+    console.log('entre a /')
     const { name } = req.query;
     console.log(name)
     try {
