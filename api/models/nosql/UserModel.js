@@ -28,16 +28,9 @@ const UserScheme = new mongoose.Schema({
   type: {
     type: String,
   },
-  purchased: [{
-    bike: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Bike',
-    },
-    count: {
-      type: Number,
-      default: 0
-    }
-  }],
+  purchased: {
+    type: Array
+  },
   cart: [{
     bike: {
       type: mongoose.Schema.Types.ObjectId,
