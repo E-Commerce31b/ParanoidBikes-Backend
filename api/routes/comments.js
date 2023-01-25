@@ -3,15 +3,11 @@ const router = express()
 const mongoose = require('mongoose');
 const { commentModel } = require('../models');
 
-// ! 63cb425243c8adacf2821d3e bike
-//!  63d0417fceff9f451cb92b79 user
-//! 63c19e6fe7be015afaf3161c admin
-//! 63d073e43876d79d8cedb8f9 comment
-
 router.get('/', async(_req, res) => {
    const comments = await commentModel.find({}).populate('author').populate('bike')
    try {
-      res.send(comments)
+      const filtered = comments.filter(c => c.softDelete !== true)
+      res.send(filtered)
    } catch (error) {
       console.log('ERROR EN POST COMMENTS')
       console.log(error)
