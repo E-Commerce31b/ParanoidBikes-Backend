@@ -15,7 +15,7 @@ router.get('/', validateAdminToken, async(_req, res) => {
    }
 })
 
-router.post('/', async(req, res) => {
+router.post('/',  async(req, res) => {
    try {
       const prod = req.body
       await soldProdModel.create(prod)

@@ -41,24 +41,6 @@ const UserScheme = new mongoose.Schema({
       default: 0
     }
   }],
-  country: {
-    type: String,
-  },
-  city: {
-    type: String,
-  },
-  state: {
-    type: String,
-  },
-  address: {
-    type: String,
-  },
-  birthday: {
-    type: String,
-  },
-  DNI: {
-    type: Number,
-  },
   softDelete: {
     type: Boolean,
     default: false,

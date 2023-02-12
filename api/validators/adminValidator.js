@@ -1,8 +1,9 @@
 const {check} = require('express-validator')
-const { userModel } = require('../models')
+const { adminModel } = require('../models')
 const validateResults = require('../utils/handleValidator');
 
-const createUserValidator = [
+
+const adminValidator = [
    check('email')
       .exists()
       .notEmpty()
@@ -30,11 +31,11 @@ const createUserValidator = [
    check('last_name')
       .optional()
       .isLength({ min: 4, max: 50 }),
-   check('history')
+   check('city')
       .optional(),
-   check('type')
+   check('country')
       .optional(),
-   check('purchased')
+   check('state')
       .optional(),
    check('softDelete')
       .optional(),
@@ -43,6 +44,4 @@ const createUserValidator = [
    }
 ]
 
-module.exports = {
-   createUserValidator
-}
+module.exports = adminValidator

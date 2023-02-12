@@ -16,8 +16,23 @@ const SoldProdSchema = mongoose.Schema({
       type: Date,
       default: Date.now
    },
+   country: {
+      type: String,
+   },
+   city: {
+      type: String,
+   },
+   state: {
+      type: String,
+   },
    address: {
-      type: String
+      type: String,
+   },
+   birthday: {
+      type: String,
+   },
+   DNI: {
+      type: Number,
    },
    zip: {
       type: String

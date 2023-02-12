@@ -34,39 +34,13 @@ router.get('/', authenticateTokenAdminRoute, async(req, res) => {
 })
 
 
-router.post('/', authenticateTokenAdminRoute, async(req, res) => {
+router.post('/', async(req, res) => {
    console.log('admin post')
    try {
        const {
-           first_name,
-           last_name,
-           type,
-           email,
-           country,
-           city,
-           state,
-           address,
-           birthday,
-           password,
-           DNI,
-           admin,
-           superAdmin
-       } = req.body
-       const createdUser = adminModel.create({
-         first_name,
-         last_name,
-         type,
-         email,
-         country,
-         city,
-         state,
-         address,
-         birthday,
-         password,
-         DNI,
-         admin,
-         superAdmin
-       })
+           body
+       } = req
+       await adminModel.create(body)
        res.status(200).send("Admin Creado")
    } catch (err) {
        console.log('error en post Admin')

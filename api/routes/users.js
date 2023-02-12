@@ -10,6 +10,8 @@ const {
 // 
 const bcrypt = require("bcryptjs")
 const jwt_decode = require('jwt-decode');
+const { createUserValidator } = require('../validators/userValidator');
+const logginValidator = require('../validators/loginValidator');
 
 router.get('/', authenticateTokenAdminRoute, async(req, res) => {
     const {first_name, last_name} = req.query
@@ -85,7 +87,7 @@ router.put('/panel/:id', async(req, res) => {
   const { id } = req.params;
   try {
       const { ...body } = req.body
-      const data = await userModel.findByIdAndUpdate(id, body)
+      await userModel.findByIdAndUpdate(id, body)
       res.status(200).send("Usuario actualizado")
   } catch (err) {
       console.log('error en put users')
@@ -95,40 +97,13 @@ router.put('/panel/:id', async(req, res) => {
   }
 })
 
-router.post("/", async (req, res) => {
+router.post("/", createUserValidator, async (req, res) => {
   // console.log('entre a post')
   try {
-    const {
-      first_name,
-      password,
-      last_name,
-      history,
-      type,
-      purchased,
-      email,
-      country,
-      city,
-      state,
-      address,
-      birthday,
-      DNI,
-    } = req.body;
-
-    // console.log(email, password)
-    const createdUser = await userModel.create({
-      first_name,
-      password,
-      last_name,
-      history,
-      type,
-      purchased,
-      email,
-      country,
-      city,
-      state,
-      address,
-      birthday,
-      DNI,
+    const { body } = req;
+    await userModel.create({
+      email: body.email,
+      password: body.password
     });
     res.status(200).send("Usuario Creado");
   } catch (err) {
@@ -139,7 +114,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/firebase-login", async (req, res) => {
+router.post("/firebase-login", logginValidator, async (req, res) => {
   // console.log('firebase-login' + req.body);
   const { email } = req.body;
   // console.log(email);
@@ -206,7 +181,7 @@ router.post("/firebase-login", async (req, res) => {
 
 
 
-router.post("/login", (req, res) => {
+router.post("/login", logginValidator, (req, res) => {
   console.log("entre a login");
   const { email, password } = req.body;
   adminModel.findOne({ email: email }, (err, user) => {
@@ -223,7 +198,7 @@ router.post("/login", (req, res) => {
           res.status(500).send("El usuario no existe");
         } else {
           if (user.softDelete) {
-            console.log("jholaaa");
+            // console.log("jholaaa");
             res.status(500).send("No tiene permisos de ingreso");
           }
           !user.softDelete &&
